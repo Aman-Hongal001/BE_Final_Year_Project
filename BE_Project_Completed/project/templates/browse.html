@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Medicinal Plant Detection and Analysis Using Machine Learning</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <style>
+        body {
+            background-image: url('/static/img3.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #090101;
+            font-family: Arial, sans-serif;
+        }
+
+        h3,
+        h5 {
+            font-weight: bold;
+        }
+
+        strong {
+            font-size: 30px;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        nav.navbar-expand-lg {
+            background-color: #060d15;
+            font-size: 20px;
+            font-weight: 30px;
+            padding: 3px 13px;
+        }
+
+        .box {
+            margin-top: 10vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.6); /* Add a semi-transparent white background */
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Add a subtle shadow effect */
+        }
+
+        .box p {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .box .browsebox #submitbtn,
+        .box .browsebox #sltversion,
+        .box .uploadbox button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Add a smooth transition effect */
+        }
+
+        .box .browsebox #submitbtn:hover,
+        .box .uploadbox button:hover {
+            background-color: #2980b9; /* Darken the button color on hover */
+        }
+
+        #formattext {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            margin-top: 40px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        footer {
+            margin-top: 15vh;
+            text-align: center;
+            color: #fff;
+            background-color: #2c3e50;
+            padding: 8px;
+            border-radius: 0 0 10px 10px;
+        }
+
+        footer a {
+            color: #fff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- navbar starts here -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a style="color:white" class="navbar-brand" href="#">GREENMED</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a style="color:white" class="nav-link active" href="{{ url_for('home') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="color:white" class="nav-link" href="{{ url_for('about') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a style="color:white" class="nav-link" href="{{ url_for('browse') }}">Upload</a>
+                    </li>
+                </ul>
+                <a style="color:white" class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container">
+        <div class="box">
+            <div class="browsebox">
+                <div class="main">
+                    <div class="register">
+                        {% if error %}
+                        <p>{{ error }}</p>
+                        {% endif %}
+                        <h3 style="text-align: center;">Browse Here </h3>
+                        <h5>Befor Browsing the Image choose the suitable Model</h5>
+                        <form method="post" action="{{ url_for('browse') }}" enctype="multipart/form-data" style="display: flex; justify-content: center; align-items: center;">
+
+                            <input type="file" name="my_image" required>
+                            <select style="text-decoration: none; color: black; position: relative; margin-right: 2vw; background-color: #5a5a5a;" name="model_version" id="sltversion" required> <!-- Added required attribute -->
+                                <option value="v5">YOLOv5</option>
+                                <option value="v8">YOLOv8</option>
+                                <option value="v9">YOLOv9</option>
+                            </select>
+                            <input style="color:black" type="submit" name="submit" id="submitbtn" value="Upload">
+
+                        </form>
+                    </div>
+                </div>
+                <p style="text-align: center;">OR</p>
+                <div class="uploadbox">
+                    <h3 style="text-align: center;">Capture an Image</h3>
+                    <button style="position: relative; left: 13vw;"><a style="text-decoration: none; color: black;" href="{{ url_for('cameraupload') }}">Click to Capture</a></button>
+                </div>
+            </div>
+        </div>
+        <p id="formattext">Images must be in either <strong>.jpg</strong>, <strong>.jpeg</strong>, or <strong>.png</strong> format only.</p>
+        <footer>
+            <p>© 2023–2024 Company, GreenMed·Inc <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+
+</html>
