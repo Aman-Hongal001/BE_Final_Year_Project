@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Medicinal Plant Detection and Analysis Using Machine Learning</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <style>
+      #uploadSnapshot,#model_version {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease; /* Add a smooth transition effect */
+        }
+  </style>
+</head>
+
+<body>
+  <center>
+    <!-- navbar starts here -->
+    <nav class="navbar navbar-expand-lg " style="background-color: #010603;">
+      <div class="container-fluid">
+        <a style="color:white" class="navbar-brand" href="#">GREENMED</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a style="color: white;" class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a style="color: white;" class="nav-link" href="{{ url_for('about') }}">About</a>
+            </li>
+            <li class="nav-item">
+              <a style="color: white;" class="nav-link" href="{{ url_for('browse') }}">Upload</a>
+            </li>
+          </ul>
+          <a style="color: white;" class="nav-link" aria-current="page" href="{{ url_for('logout') }}">logout</a>
+        </div>
+      </div>
+    </nav>
+    <br><br>
+    <!-- Camera Upload Section -->
+    <div class="container mt-5">
+        <h1 class="text-center">Camera Upload</h1>
+        <div id="camera_display"></div>
+        <button class="btn btn-primary mt-3" onclick="take_snapshot()">Take Snapshot</button>
+        <div id="results" class="mt-3"></div>
+        <h5 style="text-align: center; margin-top: 2vw">Befor Uploading the Image choose the suitable Model</h5>
+        <form id="uploadForm" style="display: none;" method="post" action="{{ url_for('upload_webcam') }}" enctype="multipart/form-data">
+            <select style="text-decoration: none; color: white; margin-top: 1vw; margin-right: 4vw; background-color: #5a5a5a;" name="model_version" id="model_version" required> <!-- Added required attribute -->
+                <option value="v5">YOLOv5</option>
+                <option value="v8">YOLOv8</option>
+                <option value="v9">YOLOv9</option>
+            </select>
+            <input type="hidden" name="snapshot" id="snapshot_data" value="" />
+            <input type="submit" class="btn btn-success mt-3" value="Upload" id="uploadSnapshot" style = "margin-bottom: 1vw; background-color: #0d6efd;">
+        </form>
+
+    </div>
+    <!-- End Camera Upload Section -->
+
+  </center>
+
+  <!-- Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+    <script language="JavaScript">
+      Webcam.set({
+        width: 320,
+        height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90
+      });
+
+      Webcam.attach('#camera_display');
+
+      var shutter = new Audio();
+      shutter.src = navigator.userAgent.match(/Firefox/) ? '/static/shutter.ogg' : '/static/shutter.mp3';
+
+      function take_snapshot() {
+        shutter.play();
+        Webcam.snap(function (data_uri) {
+          // Display snapshot and show form to upload
+          var imgElement = document.createElement('img');
+          imgElement.src = data_uri;
+          document.getElementById('results').innerHTML = '';
+          document.getElementById('results').appendChild(imgElement);
+
+          // Show the form to allow upload
+          document.getElementById('uploadForm').style.display = 'block';
+
+          // Set the hidden input value to the captured data URI
+          document.getElementById('snapshot_data').value = data_uri;
+        });
+      }
+    </script>
+  <!-- Bootstrap Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</body>
+</html>
